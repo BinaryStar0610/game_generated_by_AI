@@ -1,0 +1,487 @@
+/* ===== 全局重置与基础 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0414;
+  --p1: #ff2e88;
+  --p2: #00e5ff;
+  --gold: #ffd23f;
+  --text: #f4e9ff;
+  --dim: #8a6fa8;
+  --hp-back: #2a1130;
+  --stam: #7cff5a;
+  --panel: rgba(20, 8, 38, 0.92);
+  --border-light: #4a2a6a;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "VT323", monospace;
+  overflow: hidden;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+  image-rendering: pixelated;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+      ellipse at center,
+      #1a0b2e 0%,
+      #0a0414 70%,
+      #000000 100%
+    );
+}
+
+/* 全局 CRT 扫描线 */
+#app::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.12) 0px,
+    rgba(0, 0, 0, 0.12) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  z-index: 100;
+  mix-blend-mode: multiply;
+}
+
+/* ===== 画布 ===== */
+#game {
+  width: min(100vw, calc(100vh * 16 / 9));
+  height: min(calc(100vw * 9 / 16), 100vh);
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: #1a0b2e;
+  border: 3px solid var(--border-light);
+  box-shadow:
+    0 0 0 3px #000,
+    0 0 40px rgba(255, 46, 136, 0.25),
+    0 0 80px rgba(0, 229, 255, 0.18);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ===== HUD ===== */
+#hud {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(100vw, calc(100vh * 16 / 9));
+  height: min(calc(100vw * 9 / 16), 100vh);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.hud-top {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 18px 22px 0;
+  gap: 12px;
+}
+
+.player-hud {
+  width: 38%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.player-hud.right {
+  align-items: flex-end;
+}
+
+.player-name {
+  font-family: "Press Start 2P", monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 #000;
+  margin-bottom: 2px;
+}
+
+.bar {
+  width: 100%;
+  height: 16px;
+  background: var(--hp-back);
+  border: 2px solid #000;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+    2px 2px 0 rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+.bar.stam-bar {
+  height: 7px;
+  margin-top: 1px;
+}
+.bar.reverse .bar-fill {
+  right: 0;
+  left: auto;
+}
+
+.bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  transition: width 0.12s linear;
+}
+.hp-fill.p1 {
+  background: linear-gradient(
+    180deg,
+    var(--p1) 0%,
+    #ff5fa8 45%,
+    #b3165f 100%
+  );
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.35);
+}
+.hp-fill.p2 {
+  background: linear-gradient(
+    180deg,
+    var(--p2) 0%,
+    #7af3ff 45%,
+    #0094a8 100%
+  );
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.35);
+}
+.stam-fill {
+  background: linear-gradient(180deg, #b6ff8a 0%, var(--stam) 50%, #2fa81f 100%);
+}
+
+/* 中央信息 */
+.center-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-top: 2px;
+}
+.round-label {
+  font-family: "Press Start 2P", monospace;
+  font-size: 11px;
+  color: var(--gold);
+  text-shadow: 2px 2px 0 #000;
+  letter-spacing: 1px;
+}
+.win-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dot {
+  width: 12px;
+  height: 12px;
+  background: #1a0a24;
+  border: 2px solid #000;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+}
+.dot.on.p1-color {
+  background: var(--p1);
+  box-shadow: 0 0 8px var(--p1);
+}
+.dot.on.p2-color {
+  background: var(--p2);
+  box-shadow: 0 0 8px var(--p2);
+}
+.timer {
+  font-family: "Press Start 2P", monospace;
+  font-size: 18px;
+  color: var(--text);
+  text-shadow: 2px 2px 0 #000;
+  min-width: 34px;
+  text-align: center;
+}
+
+/* 倒计时 */
+#countdown-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 40;
+}
+#countdown-text {
+  font-family: "Press Start 2P", monospace;
+  font-size: 160px;
+  color: var(--gold);
+  text-shadow:
+    6px 6px 0 #000,
+    0 0 40px rgba(255, 210, 63, 0.9),
+    0 0 80px rgba(255, 46, 136, 0.5);
+  letter-spacing: 4px;
+}
+#countdown-text.pop {
+  animation: countdownPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes countdownPop {
+  0% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.p1-color {
+  color: var(--p1);
+}
+.p2-color {
+  color: var(--p2);
+}
+
+/* ===== 全屏界面（菜单/结算） ===== */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(26, 11, 46, 0.82) 0%,
+    rgba(10, 4, 20, 0.96) 100%
+  );
+  z-index: 50;
+  pointer-events: auto;
+  padding: 20px;
+}
+.menu-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 760px;
+  width: 100%;
+}
+
+/* 标题 */
+.title-glow {
+  text-align: center;
+  animation: titleBreathe 2.4s ease-in-out infinite;
+}
+.game-title {
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(34px, 7vw, 72px);
+  line-height: 1.1;
+  letter-spacing: 2px;
+  background: linear-gradient(
+    180deg,
+    #fff 0%,
+    var(--gold) 35%,
+    var(--p1) 70%,
+    var(--p2) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(4px 4px 0 #000) drop-shadow(0 0 20px rgba(255, 46, 136, 0.5));
+}
+@keyframes titleBreathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+.subtitle {
+  font-family: "VT323", monospace;
+  font-size: 26px;
+  color: var(--dim);
+  letter-spacing: 2px;
+  margin-top: -8px;
+}
+
+/* 操作卡片 */
+.controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  margin-top: 4px;
+}
+.ctrl-card {
+  background: var(--panel);
+  border: 3px solid var(--border-light);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6);
+}
+.ctrl-card.p1-border {
+  border-color: var(--p1);
+  box-shadow: 4px 4px 0 #000, 0 0 18px rgba(255, 46, 136, 0.3);
+}
+.ctrl-card.p2-border {
+  border-color: var(--p2);
+  box-shadow: 4px 4px 0 #000, 0 0 18px rgba(0, 229, 255, 0.3);
+}
+.ctrl-title {
+  font-family: "Press Start 2P", monospace;
+  font-size: 12px;
+  margin-bottom: 4px;
+  text-shadow: 2px 2px 0 #000;
+}
+.ctrl-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 22px;
+  color: var(--text);
+}
+.ctrl-row span {
+  margin-left: auto;
+  color: var(--dim);
+  font-size: 20px;
+}
+kbd {
+  display: inline-block;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  font-family: "Press Start 2P", monospace;
+  font-size: 11px;
+  line-height: 24px;
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(180deg, #3a2050 0%, #1a0a26 100%);
+  border: 2px solid #000;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.18),
+    2px 2px 0 #000;
+}
+.hint {
+  font-size: 18px;
+  color: var(--dim);
+  margin-top: -6px;
+}
+
+/* 像素按钮 */
+.pixel-btn {
+  font-family: "Press Start 2P", monospace;
+  font-size: 16px;
+  color: #1a0410;
+  background: linear-gradient(180deg, #ffe06b 0%, var(--gold) 50%, #d49a00 100%);
+  border: 3px solid #000;
+  padding: 14px 32px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  box-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.3),
+    4px 4px 0 #000;
+  transition: transform 0.08s, box-shadow 0.08s;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+  margin-top: 6px;
+}
+.pixel-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.3),
+    6px 6px 0 #000,
+    0 0 20px rgba(255, 210, 63, 0.6);
+}
+.pixel-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.3),
+    2px 2px 0 #000;
+}
+.pixel-btn.ghost {
+  background: linear-gradient(180deg, #3a2050 0%, #1a0a26 100%);
+  color: var(--text);
+  box-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.4),
+    4px 4px 0 #000;
+}
+.pixel-btn.ghost:hover {
+  box-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.4),
+    6px 6px 0 #000,
+    0 0 18px rgba(138, 111, 168, 0.5);
+}
+
+/* 结算界面 */
+.ko-text {
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(48px, 10vw, 110px);
+  color: var(--gold);
+  text-shadow:
+    6px 6px 0 #000,
+    0 0 40px rgba(255, 210, 63, 0.8);
+  letter-spacing: 4px;
+}
+.ko-text.pop {
+  animation: koPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes koPop {
+  0% {
+    transform: scale(0) rotate(-20deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.3) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+.winner-text {
+  font-size: 30px;
+  color: var(--text);
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 #000;
+}
+.btn-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* 窄屏提示 */
+@media (max-width: 640px) {
+  .controls-grid {
+    grid-template-columns: 1fr;
+  }
+  .ctrl-row {
+    font-size: 18px;
+  }
+}

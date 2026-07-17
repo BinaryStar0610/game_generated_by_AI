@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MECHA CLASH - 像素风机甲对战</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- 游戏画布 -->
+      <canvas id="game" width="960" height="540"></canvas>
+
+      <!-- HUD 叠层 -->
+      <div id="hud" class="hidden">
+        <div class="hud-top">
+          <!-- P1 -->
+          <div class="player-hud left">
+            <div class="player-name p1-color">P1 烈焰</div>
+            <div class="bar hp-bar">
+              <div class="bar-fill hp-fill p1" id="hp1"></div>
+            </div>
+            <div class="bar stam-bar">
+              <div class="bar-fill stam-fill" id="stam1"></div>
+            </div>
+          </div>
+          <!-- 中央信息 -->
+          <div class="center-info">
+            <div class="round-label" id="roundText">ROUND 1</div>
+            <div class="win-dots">
+              <span class="dot p1-color" id="dot-p1-1"></span>
+              <span class="dot p1-color" id="dot-p1-2"></span>
+              <span class="timer" id="timer">60</span>
+              <span class="dot p2-color" id="dot-p2-1"></span>
+              <span class="dot p2-color" id="dot-p2-2"></span>
+            </div>
+          </div>
+          <!-- P2 -->
+          <div class="player-hud right">
+            <div class="player-name p2-color">P2 寒冰</div>
+            <div class="bar hp-bar reverse">
+              <div class="bar-fill hp-fill p2" id="hp2"></div>
+            </div>
+            <div class="bar stam-bar reverse">
+              <div class="bar-fill stam-fill" id="stam2"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 倒计时 -->
+        <div id="countdown-overlay" class="hidden">
+          <span id="countdown-text"></span>
+        </div>
+      </div>
+
+      <!-- 开始界面 -->
+      <div id="menu" class="screen">
+        <div class="menu-inner">
+          <div class="title-glow">
+            <h1 class="game-title">MECHA<br />CLASH</h1>
+          </div>
+          <p class="subtitle">像素风机甲对战 · 三局两胜</p>
+
+          <div class="controls-grid">
+            <div class="ctrl-card p1-border">
+              <div class="ctrl-title p1-color">玩家 1 · 烈焰</div>
+              <div class="ctrl-row"><kbd>A</kbd><kbd>D</kbd><span>移动</span></div>
+              <div class="ctrl-row"><kbd>W</kbd><span>跳跃</span></div>
+              <div class="ctrl-row"><kbd>J</kbd><span>轻攻击 8</span></div>
+              <div class="ctrl-row"><kbd>K</kbd><span>重攻击 18</span></div>
+              <div class="ctrl-row"><kbd>L</kbd><span>防御</span></div>
+            </div>
+            <div class="ctrl-card p2-border">
+              <div class="ctrl-title p2-color">玩家 2 · 寒冰</div>
+              <div class="ctrl-row"><kbd>←</kbd><kbd>→</kbd><span>移动</span></div>
+              <div class="ctrl-row"><kbd>↑</kbd><span>跳跃</span></div>
+              <div class="ctrl-row"><kbd>1</kbd><span>轻攻击 8</span></div>
+              <div class="ctrl-row"><kbd>2</kbd><span>重攻击 18</span></div>
+              <div class="ctrl-row"><kbd>3</kbd><span>防御</span></div>
+            </div>
+          </div>
+          <p class="hint">P2 无小键盘时可用 , / . / / 替代攻击键</p>
+
+          <button id="start-btn" class="pixel-btn">开始对战</button>
+        </div>
+      </div>
+
+      <!-- 结算界面 -->
+      <div id="result" class="screen hidden">
+        <div class="menu-inner">
+          <h2 id="result-text" class="ko-text">K.O.</h2>
+          <p id="winner-text" class="winner-text"></p>
+          <div class="btn-row">
+            <button id="rematch-btn" class="pixel-btn">再战一局</button>
+            <button id="menu-btn" class="pixel-btn ghost">返回主菜单</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 脚本按依赖顺序加载 -->
+    <script src="js/constants.js"></script>
+    <script src="js/InputManager.js"></script>
+    <script src="js/Mecha.js"></script>
+    <script src="js/PixelArt.js"></script>
+    <script src="js/ParticleSystem.js"></script>
+    <script src="js/Renderer.js"></script>
+    <script src="js/GameEngine.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
