@@ -267,19 +267,20 @@ body {
 
 /* ===== 全屏界面（菜单/结算） ===== */
 .screen {
-  position: absolute;
+  position: fixed; /* fixed 脱离 #app 的 overflow:hidden，独立覆盖视口 */
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   background: radial-gradient(
-    ellipse at center,
-    rgba(26, 11, 46, 0.82) 0%,
-    rgba(10, 4, 20, 0.96) 100%
-  );
+      ellipse at center,
+      rgba(26, 11, 46, 0.82) 0%,
+      rgba(10, 4, 20, 0.96) 100%
+    );
   z-index: 50;
   pointer-events: auto;
   padding: 20px;
+  overflow: auto; /* 横屏窄高度时允许滚动，避免内容被截断 */
 }
 .menu-inner {
   display: flex;
@@ -288,6 +289,7 @@ body {
   gap: 18px;
   max-width: 760px;
   width: 100%;
+  margin: auto; /* 配合 overflow auto 居中且不溢出 */
 }
 
 /* 标题 */
@@ -645,5 +647,57 @@ kbd {
   }
   .timer {
     font-size: 18px;
+  }
+  /* 主菜单：紧凑布局 */
+  .menu-inner {
+    gap: 8px;
+    max-width: 640px;
+  }
+  .game-title {
+    font-size: clamp(22px, 6vh, 40px); /* 横屏用 vh 限制，避免过高 */
+  }
+  .subtitle {
+    font-size: 18px;
+    margin-top: -2px;
+  }
+  .controls-grid {
+    gap: 10px;
+    margin-top: 0;
+  }
+  .ctrl-card {
+    padding: 8px 10px;
+    gap: 2px;
+  }
+  .ctrl-title {
+    font-size: 10px;
+    margin-bottom: 2px;
+  }
+  .ctrl-row {
+    font-size: 16px;
+    gap: 6px;
+  }
+  .ctrl-row span {
+    font-size: 14px;
+  }
+  kbd {
+    min-width: 22px;
+    height: 22px;
+    font-size: 9px;
+    line-height: 18px;
+    padding: 0 4px;
+  }
+  .hint {
+    font-size: 14px;
+  }
+  .pixel-btn {
+    font-size: 13px;
+    padding: 10px 22px;
+  }
+  .fs-btn {
+    margin-top: 6px;
+  }
+  .mode-select {
+    gap: 12px;
+    margin-top: 8px;
   }
 }
