@@ -43,7 +43,7 @@
           </div>
           <!-- P2 -->
           <div class="player-hud right">
-            <div class="player-name p2-color">P2 寒冰</div>
+            <div class="player-name p2-color" id="p2-name">P2 寒冰</div>
             <div class="bar hp-bar reverse">
               <div class="bar-fill hp-fill p2" id="hp2"></div>
             </div>
@@ -57,6 +57,20 @@
         <div id="countdown-overlay" class="hidden">
           <span id="countdown-text"></span>
         </div>
+
+        <!-- 触屏控制（仅移动端显示） -->
+        <div id="touch-controls" class="hidden">
+          <div class="touch-pad left-pad">
+            <button id="t-left" class="touch-btn dir-btn">◀</button>
+            <button id="t-right" class="touch-btn dir-btn">▶</button>
+          </div>
+          <div class="touch-pad right-pad">
+            <button id="t-light" class="touch-btn act-btn light-btn">轻</button>
+            <button id="t-heavy" class="touch-btn act-btn heavy-btn">重</button>
+            <button id="t-jump" class="touch-btn act-btn jump-btn">跳</button>
+            <button id="t-block" class="touch-btn act-btn block-btn">防</button>
+          </div>
+        </div>
       </div>
 
       <!-- 开始界面 -->
@@ -67,7 +81,7 @@
           </div>
           <p class="subtitle">像素风机甲对战 · 三局两胜</p>
 
-          <div class="controls-grid">
+          <div class="controls-grid" id="ctrl-p1">
             <div class="ctrl-card p1-border">
               <div class="ctrl-title p1-color">玩家 1 · 烈焰</div>
               <div class="ctrl-row"><kbd>A</kbd><kbd>D</kbd><span>移动</span></div>
@@ -76,7 +90,7 @@
               <div class="ctrl-row"><kbd>K</kbd><span>重攻击 18</span></div>
               <div class="ctrl-row"><kbd>L</kbd><span>防御</span></div>
             </div>
-            <div class="ctrl-card p2-border">
+            <div class="ctrl-card p2-border" id="ctrl-p2">
               <div class="ctrl-title p2-color">玩家 2 · 寒冰</div>
               <div class="ctrl-row"><kbd>←</kbd><kbd>→</kbd><span>移动</span></div>
               <div class="ctrl-row"><kbd>↑</kbd><span>跳跃</span></div>
@@ -85,9 +99,13 @@
               <div class="ctrl-row"><kbd>3</kbd><span>防御</span></div>
             </div>
           </div>
-          <p class="hint">P2 无小键盘时可用 , / . / / 替代攻击键</p>
+          <p class="hint" id="hint-text">P2 无小键盘时可用 , / . / / 替代攻击键</p>
 
-          <button id="start-btn" class="pixel-btn">开始对战</button>
+          <div class="mode-select">
+            <button id="pvp-btn" class="pixel-btn">双人对战</button>
+            <button id="pve-btn" class="pixel-btn">人机对战</button>
+          </div>
+          <p class="hint touch-hint hidden" id="touch-hint">移动端推荐横屏体验</p>
         </div>
       </div>
 
@@ -108,6 +126,7 @@
     <script src="js/constants.js"></script>
     <script src="js/InputManager.js"></script>
     <script src="js/Mecha.js"></script>
+    <script src="js/AIController.js"></script>
     <script src="js/PixelArt.js"></script>
     <script src="js/ParticleSystem.js"></script>
     <script src="js/Renderer.js"></script>

@@ -25,6 +25,9 @@ Game.GameEngine = class GameEngine {
     this.fightAnnounce = 0; // "FIGHT!" 公告剩余帧
     this.time = 0; // 全局帧计数（用于动画）
 
+    this.mode = "pvp"; // "pvp" | "pve"
+    this.ai = null; // 人机模式下的 AI 控制器
+
     this._raf = null;
     this._lastTs = 0;
     this._acc = 0;
@@ -32,10 +35,17 @@ Game.GameEngine = class GameEngine {
   }
 
   // 开始一整局新比赛
-  startMatch() {
+  startMatch(mode = "pvp") {
+    this.mode = mode;
     this.wins = { p1: 0, p2: 0 };
     this.winner = null;
     this.round = 1;
+    // 人机模式创建 AI 控制器（控制 P2）
+    if (mode === "pve") {
+      this.ai = new Game.AIController(this.mecha2, this.mecha1);
+    } else {
+      this.ai = null;
+    }
     this._startRound();
     if (!this._running) {
       this._running = true;
@@ -48,6 +58,8 @@ Game.GameEngine = class GameEngine {
   _startRound() {
     this.mecha1.reset(280, 1);
     this.mecha2.reset(680, -1);
+    if (this.ai) this.ai.reset();
+    this.input.clearVirtual();
     this.particles.clear();
     this.phase = "countdown";
     this.countdown = Game.COUNTDOWN_FRAMES;
@@ -80,6 +92,7 @@ Game.GameEngine = class GameEngine {
     while (this._acc >= step && guard < 5) {
       this._update();
       this.input.endFrame(); // 每次逻辑步进后立即清空，防止多步进时 justPressed 被重复消费
+      if (this.ai) this.ai.endFrame();
       this._acc -= step;
       guard++;
     }
@@ -111,7 +124,7 @@ Game.GameEngine = class GameEngine {
       this.roundEndTimer--;
       // 让机甲继续物理（KO 倒地动画）
       this.mecha1.update(this.input, this.mecha2);
-      this.mecha2.update(this.input, this.mecha1);
+      this._updateP2();
       if (this.roundEndTimer <= 0) {
         if (
           this.wins.p1 >= Game.ROUNDS_TO_WIN ||
@@ -131,7 +144,7 @@ Game.GameEngine = class GameEngine {
 
     if (this.phase === "fighting") {
       this.mecha1.update(this.input, this.mecha2);
-      this.mecha2.update(this.input, this.mecha1);
+      this._updateP2();
 
       // 防止两机甲重叠：简单推开
       this._separate(this.mecha1, this.mecha2);
@@ -212,6 +225,16 @@ Game.GameEngine = class GameEngine {
     );
   }
 
+  // 更新 P2：人机模式由 AI 驱动，双人对战由键盘驱动
+  _updateP2() {
+    if (this.ai) {
+      this.ai.update();
+      this.mecha2.update(this.ai, this.mecha1);
+    } else {
+      this.mecha2.update(this.input, this.mecha1);
+    }
+  }
+
   // 简单的机体分离，避免重叠
   _separate(a, b) {
     const ha = a.getHitbox();
@@ -261,6 +284,7 @@ Game.GameEngine = class GameEngine {
       timer: Math.ceil(this.roundTimer / 60),
       countdown: Math.ceil(this.countdown / 60),
       fightAnnounce: this.fightAnnounce,
+      mode: this.mode,
     });
   }
 };

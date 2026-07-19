@@ -485,3 +485,94 @@ kbd {
     font-size: 18px;
   }
 }
+
+/* ===== 模式选择 ===== */
+.mode-select {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.mode-select .pixel-btn {
+  margin-top: 0;
+}
+
+/* ===== 触屏控制 ===== */
+#touch-controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 14px 18px;
+  pointer-events: none;
+  z-index: 50;
+}
+.touch-pad {
+  display: flex;
+  gap: 12px;
+  pointer-events: none;
+}
+.right-pad {
+  flex-wrap: wrap;
+  max-width: 220px;
+  justify-content: flex-end;
+}
+.touch-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid #000;
+  font-family: "Press Start 2P", monospace;
+  font-size: 16px;
+  color: #1a0410;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #000;
+  transition: transform 0.05s, box-shadow 0.05s;
+}
+.touch-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #000;
+}
+.dir-btn {
+  background: linear-gradient(180deg, #6a4a8a 0%, #4a2a6a 100%);
+  color: var(--text);
+}
+.act-btn {
+  color: #1a0410;
+}
+.light-btn {
+  background: linear-gradient(180deg, #ff7ab8 0%, #ff2e88 100%);
+}
+.heavy-btn {
+  background: linear-gradient(180deg, #ffe06b 0%, var(--gold) 100%);
+}
+.jump-btn {
+  background: linear-gradient(180deg, #7cff5a 0%, #4ad02a 100%);
+}
+.block-btn {
+  background: linear-gradient(180deg, #7af3ff 0%, #00e5ff 100%);
+}
+
+/* 移动端：放大触屏按钮，优化手感 */
+@media (max-width: 900px) {
+  #touch-controls {
+    padding: 10px 12px;
+  }
+  .touch-btn {
+    width: 58px;
+    height: 58px;
+    font-size: 14px;
+  }
+  .touch-pad {
+    gap: 10px;
+  }
+}

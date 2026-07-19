@@ -44,6 +44,20 @@ Game.COUNTDOWN_FRAMES = 180; // 3 秒倒计时
 Game.FIGHT_ANNOUNCE_FRAMES = 60; // "FIGHT!" 公告显示帧数（1 秒）
 Game.ROUND_END_DELAY = 120; // 回合结束间歇 2 秒
 
+// 人机 AI 参数
+Game.AI = {
+  attackRange: 78, // 进入此距离内考虑攻击
+  safeRange: 150, // 大于此距离主动接近
+  retreatRange: 46, // 小于此距离可能后撤或跳跃
+  blockChance: 0.55, // 对手攻击时防御概率
+  heavyChance: 0.18, // 攻击时选择重击的概率
+  attackChance: 0.32, // 在攻击距离内每帧发起攻击的概率
+  jumpChance: 0.006, // 随机跳跃概率
+  retreatChance: 0.02, // 过近时后撤概率
+  lowStamina: 24, // 体力低于此值后撤恢复
+  reactionFrames: 4, // 反应延迟帧数
+};
+
 // 调色板
 Game.PALETTE_P1 = {
   primary: "#ff2e88", // 霓虹品红

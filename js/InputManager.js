@@ -1,9 +1,13 @@
-// 键盘输入管理器：维护持续按下与边沿触发（justPressed）两类状态
+// 输入管理器：键盘 + 触屏虚拟按键，维护持续按下与边沿触发（justPressed）
 Game.InputManager = class InputManager {
   constructor() {
     this.pressed = new Set(); // 当前帧持续按下的 code
     this.justPressed = new Set(); // 本帧刚按下的 code（边沿触发）
     this._down = new Set(); // 浏览器报告的按下状态
+
+    // 触屏虚拟按键：key 格式 "player:action"
+    this._virtualDown = new Set();
+    this._virtualJustPressed = new Set();
 
     this._onKeyDown = (e) => {
       // 阻止方向键与空格滚动页面
@@ -32,23 +36,46 @@ Game.InputManager = class InputManager {
     this._onBlur = () => {
       this._down.clear();
       this.pressed.clear();
+      this._virtualDown.clear();
     };
     window.addEventListener("keydown", this._onKeyDown);
     window.addEventListener("keyup", this._onKeyUp);
     window.addEventListener("blur", this._onBlur);
   }
 
+  // 触屏虚拟按键按下
+  pressVirtual(player, action) {
+    const key = player + ":" + action;
+    if (!this._virtualDown.has(key)) {
+      this._virtualJustPressed.add(key);
+    }
+    this._virtualDown.add(key);
+  }
+
+  // 触屏虚拟按键抬起
+  releaseVirtual(player, action) {
+    this._virtualDown.delete(player + ":" + action);
+  }
+
+  // 清空所有虚拟按键（切场景时调用）
+  clearVirtual() {
+    this._virtualDown.clear();
+    this._virtualJustPressed.clear();
+  }
+
   // 在每帧逻辑结束时调用，清空 justPressed
   endFrame() {
     this.justPressed.clear();
+    this._virtualJustPressed.clear();
   }
 
-  // 玩家某动作是否持续按下
+  // 玩家某动作是否持续按下（同时检查键盘与虚拟按键）
   isDown(player, action) {
     const codes = Game.KEYS[player][action];
     for (const c of codes) {
       if (this.pressed.has(c)) return true;
     }
+    if (this._virtualDown.has(player + ":" + action)) return true;
     return false;
   }
 
@@ -58,6 +85,7 @@ Game.InputManager = class InputManager {
     for (const c of codes) {
       if (this.justPressed.has(c)) return true;
     }
+    if (this._virtualJustPressed.has(player + ":" + action)) return true;
     return false;
   }
 
