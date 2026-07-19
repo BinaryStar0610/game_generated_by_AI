@@ -39,6 +39,8 @@
 
   const resultText = document.getElementById("result-text");
   const winnerText = document.getElementById("winner-text");
+  const fullscreenBtn = document.getElementById("fullscreen-btn");
+  const fsToggle = document.getElementById("fs-toggle");
 
   // 移动端：隐藏双人对战按钮与 P2 控制说明，显示触屏控制与横屏提示
   if (isTouch) {
@@ -48,13 +50,107 @@
     touchHint.classList.remove("hidden");
   }
 
+  // ===== 全屏 API（跨浏览器） =====
+  function isFullscreen() {
+    return !!(
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.msFullscreenElement
+    );
+  }
+  function requestFullscreen(el) {
+    const fn =
+      el.requestFullscreen ||
+      el.webkitRequestFullscreen ||
+      el.msRequestFullscreen;
+    if (fn) {
+      try {
+        // iOS Safari 上 requestFullscreen 可能返回 Promise
+        const r = fn.call(el);
+        if (r && r.catch) r.catch(() => {});
+      } catch (e) {
+        /* 忽略 */
+      }
+    }
+  }
+  function exitFullscreen() {
+    const fn =
+      document.exitFullscreen ||
+      document.webkitExitFullscreen ||
+      document.msExitFullscreen;
+    if (fn) {
+      try {
+        const r = fn.call(document);
+        if (r && r.catch) r.catch(() => {});
+      } catch (e) {
+        /* 忽略 */
+      }
+    }
+  }
+  // 尝试锁定横屏（仅在全屏下且浏览器支持时生效，多数 Android 浏览器支持，iOS 不支持）
+  function tryLockLandscape() {
+    const so = screen.orientation;
+    if (so && typeof so.lock === "function") {
+      so.lock("landscape").catch(() => {
+        /* iOS / 不支持时静默失败，用户可手动旋转 */
+      });
+    }
+  }
+  function tryUnlockOrientation() {
+    const so = screen.orientation;
+    if (so && typeof so.unlock === "function") {
+      try {
+        so.unlock();
+      } catch (e) {
+        /* 忽略 */
+      }
+    }
+  }
+
+  // 菜单全屏按钮：进入全屏并尝试锁横屏
+  fullscreenBtn.addEventListener("click", () => {
+    if (!isFullscreen()) {
+      requestFullscreen(document.documentElement);
+      // 全屏生效后再尝试锁横屏
+      setTimeout(tryLockLandscape, 200);
+    } else {
+      exitFullscreen();
+    }
+  });
+
+  // 监听全屏状态变化：解锁屏幕方向
+  function onFsChange() {
+    if (!isFullscreen()) {
+      tryUnlockOrientation();
+    }
+  }
+  document.addEventListener("fullscreenchange", onFsChange);
+  document.addEventListener("webkitfullscreenchange", onFsChange);
+
+  // 游戏内全屏切换按钮
+  fsToggle.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (!isFullscreen()) {
+      requestFullscreen(document.documentElement);
+      setTimeout(tryLockLandscape, 200);
+    } else {
+      exitFullscreen();
+    }
+  });
+
   // 开始一局
   function startMatch(mode) {
     menu.classList.add("hidden");
     result.classList.add("hidden");
     hud.classList.remove("hidden");
+    fsToggle.classList.remove("hidden");
     // P2 名称在人机模式下显示为 CPU
     p2Name.textContent = mode === "pve" ? "CPU 寒冰" : "P2 寒冰";
+    // 移动端：首次开始时若未全屏，自动尝试进入全屏并锁横屏
+    if (isTouch && !isFullscreen()) {
+      requestFullscreen(document.documentElement);
+      setTimeout(tryLockLandscape, 200);
+    }
     // 移动端显示触屏控制
     if (isTouch) {
       touchControls.classList.remove("hidden");
@@ -68,6 +164,7 @@
   document.getElementById("rematch-btn").addEventListener("click", () => {
     result.classList.add("hidden");
     hud.classList.remove("hidden");
+    fsToggle.classList.remove("hidden");
     if (isTouch) touchControls.classList.remove("hidden");
     // 再战沿用上一局模式
     engine.startMatch(engine.mode);
@@ -76,6 +173,7 @@
     engine.stop();
     result.classList.add("hidden");
     hud.classList.add("hidden");
+    fsToggle.classList.add("hidden");
     touchControls.classList.add("hidden");
     menu.classList.remove("hidden");
   });
@@ -154,6 +252,7 @@
     // 结算
     if (s.phase === "gameOver") {
       hud.classList.add("hidden");
+      fsToggle.classList.add("hidden");
       touchControls.classList.add("hidden");
       result.classList.remove("hidden");
       resultText.textContent = "K.O.";

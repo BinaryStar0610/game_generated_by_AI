@@ -2,7 +2,10 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
     <title>MECHA CLASH - 像素风机甲对战</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -58,6 +61,9 @@
           <span id="countdown-text"></span>
         </div>
 
+        <!-- 全屏切换按钮（游戏中） -->
+        <button id="fs-toggle" class="fs-toggle hidden" title="全屏切换">⛶</button>
+
         <!-- 触屏控制（仅移动端显示） -->
         <div id="touch-controls" class="hidden">
           <div class="touch-pad left-pad">
@@ -105,7 +111,8 @@
             <button id="pvp-btn" class="pixel-btn">双人对战</button>
             <button id="pve-btn" class="pixel-btn">人机对战</button>
           </div>
-          <p class="hint touch-hint hidden" id="touch-hint">移动端推荐横屏体验</p>
+          <button id="fullscreen-btn" class="pixel-btn ghost fs-btn">全屏模式</button>
+          <p class="hint touch-hint hidden" id="touch-hint">移动端：点全屏按钮横屏体验</p>
         </div>
       </div>
 

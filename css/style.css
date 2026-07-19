@@ -34,7 +34,9 @@ body {
 #app {
   position: relative;
   width: 100vw;
+  width: 100dvw;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,7 +68,9 @@ body {
 /* ===== 画布 ===== */
 #game {
   width: min(100vw, calc(100vh * 16 / 9));
+  width: min(100dvw, calc(100dvh * 16 / 9));
   height: min(calc(100vw * 9 / 16), 100vh);
+  height: min(calc(100dvw * 9 / 16), 100dvh);
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   background: #1a0b2e;
@@ -87,7 +91,9 @@ body {
   top: 50%;
   left: 50%;
   width: min(100vw, calc(100vh * 16 / 9));
+  width: min(100dvw, calc(100dvh * 16 / 9));
   height: min(calc(100vw * 9 / 16), 100vh);
+  height: min(calc(100dvw * 9 / 16), 100dvh);
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
@@ -574,5 +580,70 @@ kbd {
   }
   .touch-pad {
     gap: 10px;
+  }
+}
+
+/* ===== 全屏按钮 ===== */
+.fs-btn {
+  margin-top: 14px;
+  font-size: 13px;
+  padding: 10px 22px;
+}
+
+/* 游戏内右上角全屏切换 */
+.fs-toggle {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border: 2px solid #000;
+  background: rgba(20, 8, 38, 0.85);
+  color: var(--gold);
+  font-size: 18px;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+.fs-toggle:active {
+  background: rgba(74, 42, 106, 0.95);
+}
+
+/* 全屏状态下：隐藏边框与外发光，让画面占满 */
+:fullscreen #game,
+:-webkit-full-screen #game {
+  border: none;
+  box-shadow: none;
+}
+:fullscreen #app,
+:-webkit-full-screen #app {
+  background: #000;
+}
+
+/* 移动端横屏：缩小 HUD 字号避免溢出 */
+@media (max-width: 900px) and (orientation: landscape) {
+  .player-name {
+    font-size: 10px;
+  }
+  .bar {
+    height: 12px;
+  }
+  .bar.stam-bar {
+    height: 5px;
+  }
+  .hud-top {
+    padding: 8px 12px 0;
+  }
+  .center-info {
+    min-width: 90px;
+  }
+  .timer {
+    font-size: 18px;
   }
 }
